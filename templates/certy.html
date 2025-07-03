@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Certificate Generator</title>
+    <style>
+        /* Modern CSS Variables */
+        :root {
+            --primary: #2A5C8B;
+            --secondary: #4CB5AE;
+            --accent: #E74C3C;
+            --dark: #2C3E50;
+            --light: #F9F9F9;
+            --gray: #ECF0F1;
+            --font-main: 'Open Sans', sans-serif;
+            --font-decorative: 'Raleway', sans-serif;
+            --transition: all 0.3s ease-in-out;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--gray);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Form Container */
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 2.5rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .form-container h2 {
+            font-family: var(--font-decorative);
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .form-container h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            background-color: white;
+            transition: var(--transition);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(76, 181, 174, 0.2);
+        }
+
+        .generate-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .generate-btn:hover {
+            background: #1F4A7A;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Certificate Container */
+        .certificate {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+            display: none;
+            border-radius: 8px;
+        }
+
+        /* Geometric Design Elements */
+        .geometric-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            opacity: 0.08;
+            background: 
+                linear-gradient(135deg, var(--primary) 25%, transparent 25%) -50px 0,
+                linear-gradient(225deg, var(--primary) 25%, transparent 25%) -50px 0,
+                linear-gradient(315deg, var(--primary) 25%, transparent 25%),
+                linear-gradient(45deg, var(--primary) 25%, transparent 25%);
+            background-size: 100px 100px;
+        }
+
+        .corner-accent {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 8px solid var(--secondary);
+            z-index: 1;
+        }
+
+        .corner-tl {
+            top: 0;
+            left: 0;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 8px 0 0 0;
+        }
+
+        .corner-tr {
+            top: 0;
+            right: 0;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 8px 0 0;
+        }
+
+        .corner-bl {
+            bottom: 0;
+            left: 0;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 8px;
+        }
+
+        .corner-br {
+            bottom: 0;
+            right: 0;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 8px 0;
+        }
+
+        .badge {
+            position: absolute;
+            right: 3rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: var(--font-decorative);
+            font-weight: 700;
+            font-size: 1.8rem;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.3);
+            z-index: 2;
+            animation: pulse 2s infinite alternate;
+        }
+
+        /* Certificate Content */
+        .certificate-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-family: var(--font-decorative);
+            font-weight: 700;
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-family: var(--font-main);
+            font-weight: 300;
+            font-size: 1.1rem;
+            color: var(--dark);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .body {
+            margin: 2.5rem 0;
+        }
+
+        .body p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .recipient {
+            font-family: 'Pacifico', cursive;
+            font-size: 3rem;
+            color: var(--accent);
+            margin: 1.5rem 0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .achievement {
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin: 2rem 0;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+            padding: 0 1rem;
+        }
+
+        .achievement::before,
+        .achievement::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40px;
+            height: 2px;
+            background: var(--secondary);
+        }
+
+        .achievement::before {
+            left: -40px;
+        }
+
+        .achievement::after {
+            right: -40px;
+        }
+
+        .details {
+            font-style: italic;
+            color: #7f8c8d;
+            margin: 1rem 0;
+        }
+
+        /* Signature Section */
+        .signature-section {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .signature {
+            text-align: center;
+        }
+
+        .signature-name {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            margin: 1rem auto;
+        }
+
+        .signature-title {
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .date {
+            margin-top: 2rem;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: var(--font-main);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .download-btn {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(42, 92, 139, 0.3);
+        }
+
+        .back-btn {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            from { transform: translateY(-50%) scale(1); }
+            to { transform: translateY(-50%) scale(1.05); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .certificate {
+                padding: 2rem;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .recipient {
+                font-size: 2.5rem;
+            }
+            
+            .badge {
+                right: 1.5rem;
+                width: 80px;
+                height: 80px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            
+            .form-container {
+                display: none;
+            }
+
+            .certificate {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                padding: 2rem;
+                page-break-after: always;
+                display: block !important;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            .action-buttons {
+                display: none !important;
+            }
+            
+            .geometric-bg {
+                opacity: 0.05;
+            }
+
+            /* Hide everything except the certificate */
+            body > *:not(.certificate) {
+                display: none !important;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="form-container" id="formContainer">
+        <h2>Certificate Details</h2>
+        <form id="certificateForm">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" required>
+            </div>
+            <div class="form-group">
+                <label for="achievement">Achievement Title</label>
+                <input type="text" id="achievement" required>
+            </div>
+            <div class="form-group">
+                <label for="completionDate">Completion Date</label>
+                <input type="date" id="completionDate" required>
+            </div>
+            <div class="form-group">
+                <label for="instructor">Instructor/Mentor</label>
+                <input type="text" id="instructor" required>
+            </div>
+            <button type="submit" class="generate-btn">Generate Certificate</button>
+        </form>
+    </div>
+    
+    <div class="certificate" id="certificate">
+        <div class="geometric-bg"></div>
+        <div class="corner-accent corner-tl"></div>
+        <div class="corner-accent corner-tr"></div>
+        <div class="corner-accent corner-bl"></div>
+        <div class="corner-accent corner-br"></div>
+        
+        <div class="badge">✓</div>
+        
+        <div class="certificate-content">
+            <div class="header">
+                <h1>Certificate</h1>
+                <p>of Completion</p>
+            </div>
+            
+            <div class="body">
+                <p>This document certifies that</p>
+                
+                <div class="recipient" id="recipientName">Alexandra Johnson</div>
+                
+                <p>has successfully completed the requirements for</p>
+                
+                <div class="achievement" id="achievementText">Advanced Web Development</div>
+                
+                <p class="details">demonstrating exceptional skill and dedication throughout the program</p>
+            </div>
+            
+            <div class="signature-section">
+                <div class="signature">
+                    <div class="signature-name" id="instructorName">Vinay Varma</div>
+                    <div class="signature-line"></div>
+                    <div class="signature-title">Program Director</div>
+                </div>
+            </div>
+            
+            <div class="date" id="completionDateText">
+                Completed on June 15, 2023
+            </div>
+        </div>
+    </div>
+    
+    <div class="action-buttons" id="actionButtons">
+        <button class="action-btn download-btn" onclick="handleDownload()">Download Certificate</button>
+        <button class="action-btn back-btn" id="backBtn">Create Another</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('certificateForm');
+            const formContainer = document.getElementById('formContainer');
+            const certificate = document.getElementById('certificate');
+            const actionButtons = document.getElementById('actionButtons');
+            const backBtn = document.getElementById('backBtn');
+            
+            // Format date as "Month Day, Year"
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                return date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const achievement = document.getElementById('achievement').value;
+                const completionDate = document.getElementById('completionDate').value;
+                const instructor = document.getElementById('instructor').value;
+                
+                // Update certificate
+                document.getElementById('recipientName').textContent = `${firstName} ${lastName}`;
+                document.getElementById('achievementText').textContent = achievement;
+                document.getElementById('instructorName').textContent = instructor;
+                document.getElementById('completionDateText').textContent = `Completed on ${formatDate(completionDate)}`;
+                
+                // Show certificate and hide form
+                formContainer.style.display = 'none';
+                certificate.style.display = 'block';
+                actionButtons.style.display = 'flex';
+                
+                // Trigger animation
+                certificate.style.animation = 'none';
+                certificate.offsetHeight; /* trigger reflow */
+                certificate.style.animation = 'fadeIn 0.8s ease-out'; 
+            });
+            
+            backBtn.addEventListener('click', function() {
+                formContainer.style.display = 'block';
+                certificate.style.display = 'none';
+                actionButtons.style.display = 'none';
+                form.reset();
+            });
+            
+            // Handle download/print
+            window.handleDownload = function() {
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>

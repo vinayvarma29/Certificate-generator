@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Certificate Generator</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        /* Add these styles to match your existing design */
+        .password-requirements {
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: #555;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            color: #ff6b6b;
+        }
+        .requirement:before {
+            content: "✗";
+            margin-right: 8px;
+        }
+        .requirement.valid {
+            color: #4cc9f0;
+        }
+        .requirement.valid:before {
+            content: "✓";
+        }
+        .password-strength {
+            height: 4px;
+            background: #eee;
+            margin: 10px 0 15px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .strength-weak {
+            background: #ff6b6b;
+        }
+        .strength-medium {
+            background: #f1c40f;
+        }
+        .strength-strong {
+            background: #4cc9f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Create a New Account</h2>
+
+        <form action="/signup" method="POST" id="signupForm">
+            <input type="email" name="email" placeholder="Enter Email" required>
+            <input type="text" name="username" placeholder="Enter Username" required>
+            <input type="password" name="password" id="password" placeholder="Enter Password" required 
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$">
+            
+            <div class="password-requirements">
+                <div class="requirement" id="length">At least 8 characters</div>
+                <div class="requirement" id="uppercase">At least one uppercase letter</div>
+                <div class="requirement" id="lowercase">At least one lowercase letter</div>
+                <div class="requirement" id="number">At least one number</div>
+                <div class="requirement" id="special">At least one special character (@$!%*?&)</div>
+            </div>
+            
+            <div class="password-strength">
+                <div class="strength-bar" id="strengthBar"></div>
+            </div>
+            
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% endif %}
+            <button type="submit" id="submitButton">Sign Up</button>
+        </form>
+
+        <p>Already have an account? <a href="/">Login here</a></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.getElementById('password');
+            const requirements = {
+                length: document.getElementById('length'),
+                uppercase: document.getElementById('uppercase'),
+                lowercase: document.getElementById('lowercase'),
+                number: document.getElementById('number'),
+                special: document.getElementById('special')
+            };
+            const strengthBar = document.getElementById('strengthBar');
+            const submitButton = document.getElementById('submitButton');
+            const form = document.getElementById('signupForm');
+
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                
+                // Check requirements
+                const hasLength = password.length >= 8;
+                const hasUppercase = /[A-Z]/.test(password);
+                const hasLowercase = /[a-z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                const hasSpecial = /[@$!%*?&]/.test(password);
+                
+                // Update requirement indicators
+                updateRequirement(requirements.length, hasLength);
+                updateRequirement(requirements.uppercase, hasUppercase);
+                updateRequirement(requirements.lowercase, hasLowercase);
+                updateRequirement(requirements.number, hasNumber);
+                updateRequirement(requirements.special, hasSpecial);
+                
+                // Calculate and display password strength
+                updateStrengthIndicator(password);
+            });
+
+            function updateRequirement(element, isValid) {
+                if (isValid) {
+                    element.classList.add('valid');
+                } else {
+                    element.classList.remove('valid');
+                }
+            }
+
+            function updateStrengthIndicator(password) {
+                let strength = 0;
+                if (password.length >= 8) strength += 20;
+                if (/[A-Z]/.test(password)) strength += 20;
+                if (/[a-z]/.test(password)) strength += 20;
+                if (/\d/.test(password)) strength += 20;
+                if (/[@$!%*?&]/.test(password)) strength += 20;
+                
+                strengthBar.style.width = strength + '%';
+                strengthBar.className = 'strength-bar ';
+                
+                if (strength < 40) {
+                    strengthBar.classList.add('strength-weak');
+                } else if (strength < 80) {
+                    strengthBar.classList.add('strength-medium');
+                } else {
+                    strengthBar.classList.add('strength-strong');
+                }
+                
+                submitButton.disabled = strength < 80;
+            }
+
+            form.addEventListener('submit', function(e) {
+                const password = passwordInput.value;
+                const isStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
+                
+                if (!isStrong) {
+                    e.preventDefault();
+                    alert('Password must contain:\n- At least 8 characters\n- One uppercase letter\n- One lowercase letter\n- One number\n- One special character (@$!%*?&)');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

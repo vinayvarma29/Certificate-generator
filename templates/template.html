@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Choose Your Certificate Template</title>
+    <link rel="stylesheet" href="../static/styles1.css">
+    <style>
+        /* Modern CSS Reset */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --font-main: 'Poppins', sans-serif;
+            --font-decorative: 'Playfair Display', serif;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1), 0 5px 10px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+       header {
+    background: rgba(0, 0, 0, 0.9); /* Darker background for better contrast */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+}
+
+        .logo h1 {
+            font-family: var(--font-decorative);
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+       nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    align-items: center;
+}
+
+
+       nav a {
+    text-decoration: none;
+    color: white; /* Ensure white color */
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        nav a:hover {
+    color: #4895ef; /* Accent color on hover */
+}
+
+.logout-button {
+    background: #f72585; /* Vibrant color for logout */
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+    background: #d91a6d;
+    transform: translateY(-2px);
+}
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        .template-selection {
+            flex: 1;
+            padding: 4rem 5%;
+            text-align: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .template-selection h2 {
+            font-family: var(--font-decorative);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+            position: relative;
+            display: inline-block;
+        }
+
+        .template-selection h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+
+        .template-selection p {
+            font-size: 1.1rem;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            line-height: 1.6;
+        }
+
+        .template-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .template-btn {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            cursor: pointer;
+            padding: 0;
+            position: relative;
+            aspect-ratio: 1/0.7;
+        }
+
+        .template-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .template-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .template-btn:hover::before {
+            opacity: 1;
+        }
+
+        .template-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .template-btn:hover img {
+            transform: scale(1.05);
+        }
+
+        .template-btn::after {
+            content: 'Select Template';
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .template-btn:hover::after {
+            bottom: 20px;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem 5%;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: var(--transition);
+            margin: 0 0.5rem;
+        }
+
+        footer a:hover {
+            color: var(--success);
+            text-decoration: underline;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .template-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .template-selection {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .template-btn {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .template-btn:nth-child(1) { animation-delay: 0.1s; }
+        .template-btn:nth-child(2) { animation-delay: 0.2s; }
+        .template-btn:nth-child(3) { animation-delay: 0.3s; }
+        .template-btn:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="logo">
+            <h1>D17-certify</h1>
+        </div>
+        <nav>
+            <ul>
+                 <li><a href="/index">Home</a></li>
+                 <li><a href="/features">Features</a></li>
+                 <li><a href="/contact">Contact</a></li>
+                  <li class="logout">
+                <a href="/logout" class="logout-button">Logout</a>
+            </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Template Selection Section -->
+    <main class="template-selection">
+        <h2>Select Your Template</h2>
+        <p>Hover over the certificates to see a preview and choose your desired template.</p>
+
+       <div class="template-buttons">
+    <a href="/generate_certificate/1">
+        <button class="template-btn" id="template1">
+            <img src="../static/images/simple.png" alt="Template 1">
+        </button>
+    </a>
+    <a href="/generate_certificate/2">
+        <button class="template-btn" id="template2">
+            <img src="../static/images/simpcert.png" alt="Template 2">
+        </button>
+    </a>
+    <a href="/generate_certificate/3">
+        <button class="template-btn" id="template3">
+            <img src="../static/images/cert.png" alt="Template 3">
+        </button>
+    </a>
+            <!-- <a href="{{ url_for('simple') }}">
+                <button class="template-btn" id="template4">
+                    <img src="{{ url_for('static', filename='images/template4.jpg') }}" alt="Template 4">
+                </button>
+            </a> -->
+        </div>
+        
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2025 CertifyIt. All rights reserved.</p>
+        <p>Follow us: 
+            <a href="#">Facebook</a> | 
+            <a href="#">Instagram</a> | 
+            <a href="#">Twitter</a>
+        </p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Generator</title>
+    <style>
+        /* Base Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400&family=Dancing+Script:wght@700&display=swap');
+        
+        :root {
+            --primary-color: #8b5a2b;
+            --secondary-color: #d4af37;
+            --accent-color: #5a3921;
+            --text-color: #333;
+            --paper-color: #f9f5e9;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0e6d2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Form Styles */
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--paper-color);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .form-container h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-color);
+            font-weight: 400;
+        }
+
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            background-color: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(139, 90, 43, 0.2);
+        }
+
+        .generate-btn {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .generate-btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* Certificate Container */
+        .certificate {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--paper-color);
+            padding: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            animation: fadeIn 1.5s ease-out;
+            border: 15px solid transparent;
+            border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M20,20 L80,20 L80,80 L20,80 Z" fill="none" stroke="%238b5a2b" stroke-width="5" stroke-dasharray="10,5" /></svg>') 20 round;
+            display: none;
+        }
+        
+        /* Decorative Elements */
+        .certificate::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid var(--secondary-color);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .corner {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><path d="M0,0 L80,0 L80,80 Z" fill="none" stroke="%23d4af37" stroke-width="3" /></svg>');
+            background-repeat: no-repeat;
+            z-index: 1;
+        }
+        
+        .corner-tl { top: 0; left: 0; transform: rotate(0deg); }
+        .corner-tr { top: 0; right: 0; transform: rotate(90deg); }
+        .corner-bl { bottom: 0; left: 0; transform: rotate(270deg); }
+        .corner-br { bottom: 0; right: 0; transform: rotate(180deg); }
+        
+        .seal {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--secondary-color) 0%, var(--primary-color) 100%);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0.9;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        .seal::before {
+            content: "★";
+            font-size: 60px;
+            color: white;
+        }
+        
+        /* Certificate Content */
+        .certificate-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 3.5rem;
+            color: var(--primary-color);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+        }
+        
+        .header p {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            letter-spacing: 5px;
+            margin-top: 20px;
+        }
+        
+        .body {
+            margin: 40px 0;
+        }
+        
+        .body p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+        
+        .recipient {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin: 30px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .reason {
+            font-style: italic;
+            font-size: 1.3rem;
+            margin: 30px 0;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .reason::before,
+        .reason::after {
+            content: '"';
+            font-size: 2rem;
+            color: var(--secondary-color);
+            position: absolute;
+        }
+        
+        .reason::before {
+            top: -15px;
+            left: -25px;
+        }
+        
+        .reason::after {
+            bottom: -25px;
+            right: -25px;
+        }
+
+        .duration {
+            font-style: italic;
+            color: var(--accent-color);
+            margin-top: 10px;
+        }
+        
+        /* Updated Signature Styles */
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            position: relative;
+        }
+        
+        .signature {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .signature-left {
+            text-align: left;
+            padding-left: 50px;
+        }
+        
+        .signature-right {
+            text-align: right;
+            padding-right: 50px;
+        }
+        
+        .signature-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .signature-line {
+            width: 200px;
+            height: 2px;
+            background-color: var(--text-color);
+            margin: 10px 0;
+        }
+        
+        .signature p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-color);
+            margin-top: 5px;
+        }
+        
+        .organization-stamp {
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-top: 15px;
+        }
+        
+        .date {
+            margin-top: 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-color);
+        }
+        .certificate-id {
+            font-size: 14px;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            from { transform: translateY(-50%) scale(1); }
+            to { transform: translateY(-50%) scale(1.05); }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            
+            .form-container {
+                display: none;
+            }
+
+            .certificate {
+                box-shadow: none;
+                border-image: none;
+                border: 2px solid #ccc;
+                padding: 30px;
+                page-break-after: always;
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+        
+        /* Download Button */
+        .download-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+            display: none;
+        }
+        
+        .download-btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 100;
+            display: none;
+        }
+
+        .back-btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        @media print {
+        body {
+            background: none;
+            padding: 0;
+        }
+        
+        .form-container {
+            display: none;
+        }
+
+        .certificate {
+            box-shadow: none;
+            border-image: none;
+            border: 2px solid #ccc;
+            padding: 30px;
+            page-break-after: always;
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+        
+        .no-print, 
+        .download-btn, 
+        .back-btn {
+            display: none !important;
+        }
+        
+        /* Ensure decorative elements print properly */
+        .certificate::before,
+        .corner,
+        .seal {
+            display: block !important;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="form-container" id="formContainer">
+        <h2>Certificate Details</h2>
+        <form id="certificateForm">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" required>
+            </div>
+            <div class="form-group">
+                <label for="courseName">Course Name</label>
+                <input type="text" id="courseName" required>
+            </div>
+            <div class="form-group">
+                <label for="organizationName">Organization Name</label>
+                <input type="text" id="organizationName" required>
+            </div>
+            <div class="form-group">
+                <label for="completionDate">Date of Completion</label>
+                <input type="date" id="completionDate" required>
+            </div>
+            <div class="form-group">
+                <label for="duration">Duration</label>
+                <select id="duration" required>
+                    <option value="">Select duration</option>
+                    <option value="4 weeks">4 weeks</option>
+                    <option value="8 weeks">8 weeks</option>
+                    <option value="12 weeks">12 weeks</option>
+                    <option value="6 months">6 months</option>
+                    <option value="1 year">1 year</option>
+                </select>
+            </div>
+            <button type="submit" class="generate-btn">Generate Certificate</button>
+        </form>
+    </div>
+    
+    <div class="certificate" id="certificate">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+        
+        <div class="seal"></div>
+        
+        <div class="certificate-content">
+            <div class="header">
+                <h1>Certificate</h1>
+                <p>of Achievement</p>
+            </div>
+            
+            <div class="body">
+                <p>This is to certify that</p>
+                
+                <div class="recipient" id="recipientName">Alexandra Johnson</div>
+                
+                <p>has successfully completed and demonstrated outstanding performance in</p>
+                
+                <div class="reason" id="courseTitle">Advanced Web Development Mastery</div>
+
+                <p class="duration" id="courseDuration">Course Duration: 12 weeks</p>
+                
+                <p>With great dedication and commitment, the recipient has shown exceptional skills and knowledge in this field, deserving recognition for their accomplishments.</p>
+            </div>
+            
+            <div class="signatures">
+                <div class="signature signature-left">
+                    <div class="signature-name">Vinay Varma</div>
+                    <div class="signature-line"></div>
+                    <p>Chief Executive Officer</p>
+                    <p id="ceoOrgName">Tech Academy</p>
+                </div>
+                <div class="signature signature-right">
+                    <!-- Empty space for alignment -->
+                </div>
+            </div>
+            
+            <div class="date" id="completionDateText">
+                Awarded on this 15th day of June, 2023
+            </div>
+
+            <p class="certificate-id">Certificate ID: <span id="certificateId">AU1234XYZ</span></p>
+        </div>
+    </div>
+    
+    <button class="download-btn no-print" onclick="window.print()">Download Certificate</button>
+    <button class="back-btn no-print" id="backBtn">Back to Form</button>
+    
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('certificateForm');
+        const formContainer = document.getElementById('formContainer');
+        const certificate = document.getElementById('certificate');
+        const downloadBtn = document.querySelector('.download-btn');
+        const backBtn = document.getElementById('backBtn');
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+
+            const day = date.getDate();
+            const month = date.toLocaleString('default', { month: 'long' });
+            const year = date.getFullYear();
+
+            let suffix = 'th';
+            if (day % 10 === 1 && day !== 11) suffix = 'st';
+            else if (day % 10 === 2 && day !== 12) suffix = 'nd';
+            else if (day % 10 === 3 && day !== 13) suffix = 'rd';
+
+            return `Awarded on this ${day}${suffix} day of ${month}, ${year}`;
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const courseName = document.getElementById('courseName').value.trim();
+            const organizationName = document.getElementById('organizationName').value.trim();
+            const completionDate = document.getElementById('completionDate').value;
+            const duration = document.getElementById('duration').value.trim();
+
+            const randID = `AU${generateUUID()}XYZ`;
+            document.getElementById('certificateId').textContent = randID;
+
+            document.getElementById('recipientName').textContent = `${firstName} ${lastName}`;
+            document.getElementById('courseTitle').textContent = courseName;
+            document.getElementById('courseDuration').textContent = `Course Duration: ${duration}`;
+            document.getElementById('completionDateText').textContent = formatDate(completionDate);
+            document.getElementById('ceoOrgName').textContent = organizationName;
+
+            // Send certificate to backend
+            fetch("/save_certificate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    cert_id: randID,
+                    fname: firstName,
+                    lname: lastName,
+                    course: courseName,
+                    date: completionDate,
+                    organizationName: organizationName,
+                    length: duration
+                })
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(err => {
+                            throw new Error(err.message || 'Failed to save certificate');
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data.success) {
+                        alert("Failed to save certificate: " + data.message);
+                    } else {
+                        console.log("Certificate saved successfully.");
+                    }
+                })
+                .catch(err => {
+                    alert("Error saving certificate: " + err.message);
+                    console.error("Save error:", err);
+                });
+
+            formContainer.style.display = 'none';
+            certificate.style.display = 'block';
+            downloadBtn.style.display = 'block';
+            backBtn.style.display = 'block';
+
+            certificate.style.animation = 'none';
+            certificate.offsetHeight;
+            certificate.style.animation = 'fadeIn 1.5s ease-out';
+        });
+
+        backBtn.addEventListener('click', function () {
+            formContainer.style.display = 'block';
+            certificate.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            backBtn.style.display = 'none';
+        });
+
+        formContainer.style.animation = 'fadeIn 0.8s ease-out';
+    });
+</script>
+</body>
+</html>

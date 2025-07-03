@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Certificate Generator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+    body {
+      font-family: "Georgia", serif;
+      margin: 0;
+      padding: 0;
+      background: #f3f3f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-wrapper {
+      margin-top: 50px;
+    }
+
+    form {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    form input {
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    form button {
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      background: #4a5699;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    form button:hover {
+      background: #364078;
+    }
+
+    .certificate {
+      background: white;
+      border: 10px double #4a5699;
+      padding: 40px;
+      margin-top: 40px;
+      width: 1000px;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      display: none;
+    }
+
+    .certificate svg {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      height: 60px;
+    }
+
+    .certificate h1 {
+      font-size: 36px;
+      margin: 20px 0;
+      color: #333;
+    }
+
+    .certificate h2 {
+      font-size: 24px;
+      margin: 10px 0;
+      font-weight: normal;
+      color: #4a5699;
+    }
+
+    .certificate .certificate-id {
+      margin-top: 30px;
+      font-style: italic;
+      font-size: 14px;
+      color: #999;
+    }
+
+    #download {
+      margin: 30px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #4a5699;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #download:hover {
+      background-color: #364078;
+    }
+
+    .orgname {
+      font-family: 'Pacifico', cursive;
+      font-size: 30px;
+      font-weight: bold;
+      color: #ff6ec4;
+      animation: glowingColors 4s linear infinite, glow 1.5s ease-in-out infinite alternate;
+      display: inline-block;
+    }
+
+    @keyframes glowingColors {
+      0%   { color: #ff6ec4; }
+      25%  { color: #7873f5; }
+      50%  { color: #47e891; }
+      75%  { color: #ffdd59; }
+      100% { color: #ff6ec4; }
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px #ff6ec4, 0 0 10px #7873f5;
+      }
+      to {
+        text-shadow: 0 0 10px #47e891, 0 0 20px #ff6ec4;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-wrapper">
+    <form id="form">
+      <h2>Enter Certificate Details</h2>
+      <input type="text" id="fname" placeholder="First Name" required />
+      <input type="text" id="lname" placeholder="Last Name" required />
+      <input type="text" id="course" placeholder="Course Name" required />
+      <input type="date" id="date" required />
+      <input type="text" id="organizationName" placeholder="Organization Name" required>
+      <input type="text" id="length" placeholder="Course Duration" required />
+      <button id="Generate">Generate Certificate</button>
+    </form>
+  </div>
+
+  <div id="certificate" class="certificate"></div>
+  <button id="download">Download PDF</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+  <script>
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        let r = Math.random() * 16 | 0,
+            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    document.getElementById("Generate").addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const fname = document.getElementById("fname").value.trim();
+      const lname = document.getElementById("lname").value.trim();
+      const course = document.getElementById("course").value.trim();
+      const date = document.getElementById("date").value;
+      const orgname = document.getElementById("organizationName").value.trim();
+      const length = document.getElementById("length").value.trim();
+
+      if (!fname || !lname || !course || !date || !orgname || !length) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const randID = `AU${generateUUID()}XYZ`;
+      const fullName = `${fname} ${lname}`;
+
+      // Send data to backend
+      fetch("/save_certificate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          cert_id: randID,
+          fname,
+          lname,
+          course,
+          date
+        })
+      }).then(res => res.json()).then(data => {
+        if (!data.success) {
+          alert("Failed to save certificate: " + data.message);
+        }
+      });
+
+      const certificateHTML = `
+        <h1>CERTIFICATE OF COMPLETION</h1>
+        <h2>This is to certify that</h2>
+        <h1>${fullName}</h1>
+        <h2>has successfully completed the</h2>
+        <h1>${course}</h1>
+        <h2>on ${date} • Duration: ${length}</h2>
+        <h2>Issued by <span class="orgname">${orgname}</span></h2>
+        <div class="certificate-id">Certificate ID: ${randID}</div>
+      `;
+
+      document.getElementById("certificate").innerHTML = certificateHTML;
+      document.getElementById("form").style.display = "none";
+      document.getElementById("certificate").style.display = "block";
+      document.getElementById("download").style.display = "inline-block";
+    });
+
+    document.getElementById("download").addEventListener("click", () => {
+      const opt = {
+        margin: 1,
+        filename: "certificate.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "px", format: "a2", orientation: "landscape" },
+      };
+
+      const element = document.getElementById("certificate");
+      const orgEl = element.querySelector(".orgname");
+      if (orgEl) {
+        orgEl.style.animation = "none";
+        orgEl.style.color = "#C45FA0";
+        orgEl.style.textShadow = "none";
+      }
+
+      html2pdf().set(opt).from(element).save();
+    });
+  </script>
+</body>
+</html>
