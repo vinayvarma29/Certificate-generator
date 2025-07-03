@@ -1,0 +1,128 @@
+
+
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Set global font and background */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+}
+
+/* General container styling for the forms */
+.container {
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    padding: 40px 60px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+/* Header Styles */
+h2, h3 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Input fields styling */
+input[type="email"],
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #333;
+    background-color: #f4f4f4;
+    transition: all 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #6a11cb;
+    background-color: #fff;
+}
+
+/* Button Styling */
+button {
+    width: 100%;
+    padding: 14px;
+    background-color: #6a11cb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #2575fc;
+    transform: translateY(-3px);
+}
+
+/* Error message */
+.error {
+    color: #ff4c4c;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Link styling for signup and login redirection */
+p {
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #2575fc;
+}
+
+/* Styling for the forms when displayed */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+/* Responsive Design: Mobile Styling */
+@media (max-width: 480px) {
+    .container {
+        padding: 30px;
+    }
+    
+    h2, h3 {
+        font-size: 26px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 12px;
+    }
+}
